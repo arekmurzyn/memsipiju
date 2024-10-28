@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Specify the port number the container should expose
-EXPOSE 5055
+EXPOSE 5000
 
 # Run the application
 CMD ["python3", "memsipiju.py"]
