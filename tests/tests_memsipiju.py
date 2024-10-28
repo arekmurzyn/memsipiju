@@ -35,7 +35,7 @@ class TestApp(unittest.TestCase):
         assert response.status_code == 400, f"Expected 400, got {response.status_code}"
         assert data['error'] == 'Duration parameter is required', f"Expected 'Duration parameter is required', got {data['error']}"
 
-   def test_missing_memory(self):
+    def test_missing_memory(self):
         response = self.app.post('/job', json={'duration': 1})
         data = response.get_json()
         assert response.status_code == 400, f"Expected 400, got {response.status_code}"
@@ -47,24 +47,23 @@ class TestApp(unittest.TestCase):
         assert response.status_code == 400, f"Expected 400, got {response.status_code}"
         assert data['error'] == 'Duration must be a positive number', f"Expected 'Duration must be a positive number', got {data['error']}"
 
-   def test_invalid_memory(self):
-        response = self.app.post('/job', json={'duration': 1, 'memory_mb': 'not a number'})
-        data = response.get_json()
-        assert response.status_code == 400, f"Expected 400, got {response.status_code}"
-        assert data['error'] == 'Memory amount must be a positive number', f"Expected 'Memory amount must be a positive number', got {data['error']}"
+    def test_invalid_memory(self):
+       response = self.app.post('/job', json={'duration': 1, 'memory_mb': 'not a number'})
+       data = response.get_json()
+       assert response.status_code == 400, f"Expected 400, got {response.status_code}"
+       assert data['error'] == 'Memory amount must be a positive number', f"Expected 'Memory amount must be a positive number', got {data['error']}"
 
     def test_negative_memory(self):
-        response = self.app.post('/job', json={'duration': 1.0, 'memory_mb': -100})
-        data = response.get_json()
-        assert response.status_code == 400, f"Expected 400, got {response.status_code}"
-        assert data['error'] == 'Memory amount must be a positive number', f"Expected 'Memory amount must be a positive number', got {data['error']}"
+       response = self.app.post('/job', json={'duration': 1.0, 'memory_mb': -100})
+       data = response.get_json()
+       assert response.status_code == 400, f"Expected 400, got {response.status_code}"
+       assert data['error'] == 'Memory amount must be a positive number', f"Expected 'Memory amount must be a positive number', got {data['error']}"
 
-   def test_negative_duration(self):
-        response = self.app.post('/job', json={'duration': -1.0, 'memory_mb': 100})
-        data = response.get_json()
-        assert response.status_code == 400, f"Expected 400, got {response.status_code}"
-        assert data['error'] == 'Duration must be a positive number', f"Expected 'Duration must be a positive number', got {data['error']}"
-
+    def test_negative_duration(self):
+       response = self.app.post('/job', json={'duration': -1.0, 'memory_mb': 100})
+       data = response.get_json()
+       assert response.status_code == 400, f"Expected 400, got {response.status_code}"
+       assert data['error'] == 'Duration must be a positive number', f"Expected 'Duration must be a positive number', got {data['error']}"
 
 if __name__ == '__main__':
     import nose
