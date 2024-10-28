@@ -21,7 +21,6 @@ app = Flask(__name__)
 @app.route('/job', methods=['POST'])
 def run_job():
     if not request.is_json:
-        #print(f"Error: Request must be JSON", file=sys.stderr)
         log_json("Request must be JSON", level="error")
         return jsonify({"error": "Request must be JSON"}), 400
     
@@ -30,24 +29,32 @@ def run_job():
     memory_mb = data.get('memory_mb', None)
 
     if duration is None:
-        #print(f"Error: Duration parameter is required", file=sys.stderr)
         log_json("Duration parameter is required", level="error")
         return jsonify({"error": "Duration parameter is required"}), 400
-    
+    if memory_mb is None:
+        log_json("Memory amount parameter is required", level="error")
+        return jsonify({"error": "Memory amount parameter is required"}), 400
+
     try:
         duration = float(duration)
-        if duration <= 0:
-            raise ValueError("Duration must be a positive number")
+    except ValueError:
+        log_json("Duration must be a positive number", level="error")
+        return jsonify({"error":"Duration must be a positive number"}), 400        
         
-        if memory_mb is not None:
-            memory_mb = float(memory_mb)
-            if memory_mb < 0:
-                raise ValueError("Memory amount must be non-negative")
-    except ValueError as e:
-        #print(f"Error: {str(e)}", file=sys.stderr)
-        log_json("{str(e)}", level="error")
-        return jsonify({"error": str(e)}), 400
-  
+    try:    
+        memory_mb = float(memory_mb)
+    except ValueError:
+        log_json("Memory amount must be a positive number", level="error")
+        return jsonify({"error": "Memory amount must be a positive number"}), 400
+
+    if duration <= 0:
+        log_json("Duration must be a positive number", level="error")
+        return jsonify({"error": "Duration must be a positive number"}), 400
+ 
+    if memory_mb <= 0:
+        log_json("Memory amount must be a positive number", level="error")
+        return jsonify({"error": "Memory amount must be a positive number"}), 400
+
     # Allocate memory if requested
     allocated_memory = []
     if memory_mb:
@@ -56,7 +63,6 @@ def run_job():
             for _ in range(memory_to_allocate // 1000):  # Allocate in chunks
                 allocated_memory.append(bytearray(1000))  # 1000 bytes per chunk
         except MemoryError:
-            #print(f"Error: Unable to allocate requested memory", file=sys.stderr)
             log_json("Unable to allocate requested memory", level="error")
             return jsonify({"error": "Insufficient memory to fulfill request"}), 500
     
@@ -69,7 +75,6 @@ def run_job():
             for i in range(1000000):  # Some arbitrary number of iterations
                 x += i
     except Exception as e:
-        #print(f"Error during CPU job execution: {str(e)}", file=sys.stderr)
         log_json("An unexpected error occurred during CPU job execution", level="error")
         return jsonify({"error": "An unexpected error occurred during CPU job execution"}), 500
     
@@ -77,7 +82,6 @@ def run_job():
     allocated_memory = []
 
     # Print a message to stdout when the job is done
-    #print(f"Job completed. Duration: {duration} seconds, Memory: {memory_mb} MB", file=sys.stdout)
     log_json(f"Job completed. Duration: {duration} seconds, Memory: {memory_mb} MB", level="info")
     return jsonify({
         "status": "completed",
