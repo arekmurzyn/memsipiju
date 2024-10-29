@@ -90,6 +90,4 @@ def run_job():
     }), 200
 
 if __name__ == '__main__':
-    app.run(debug=True,  # Enable debug mode
-            host='0.0.0.0', # Listen on all public IPs
-            port=5000)
+    app.run(debug=False)

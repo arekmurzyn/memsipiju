@@ -1,7 +1,9 @@
 # Flask web framework
 Flask==3.0.0
+#server
+uwsgi==2.0.24
 # Nose
-nose==2.12.0
-rednose==0.4.4
+nose==1.3.7
+rednose==0.4.3
 #Coverage
 coverage==7.4.0

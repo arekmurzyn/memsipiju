@@ -2,3 +2,6 @@ __pycache__/memsipiju.cpython-312.pyc
 tests/__pycache__/__init__.cpython-312.pyc
 tests/__pycache__/tests_memsipiju.cpython-312.pyc
 .coverage
+.vscode/settings.json
+.gitignore
+
