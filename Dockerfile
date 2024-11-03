@@ -1,22 +1,46 @@
-# Use an official Python runtime as the base image
-FROM python:3.9-slim
+# docker build --progress=plain --no-cache -t arbajt/memsipiju:0.0.1 .
+# Build stage
+FROM python:3.9-slim as builder
+
+WORKDIR /build
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
     libc6-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && pip install wheel
-# Set the working directory in the container
-WORKDIR /app
+    libpcre3 \
+    libpcre3-dev \
+    && rm -rf /var/lib/apt/lists/* 
+
+# Create a virtual environment and install dependencies
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy the dependencies file to the working directory
 COPY requirements.txt .
 
 # Upgrade PIP
-RUN pip install --timeout=1000 --upgrade pip
+RUN pip install --timeout=100 --upgrade pip
 # Install any dependencies
-RUN pip install --timeout=1000 --no-cache-dir -r requirements.txt
+RUN pip install --timeout=100 --no-cache-dir -r requirements.txt
+
+#runtime stage
+FROM python:3.9-slim as runtime
+
+# Creating user for uwsgi
+RUN groupadd -r uwsgi && useradd -r -g uwsgi uwsgi
+
+# Copy the virtual environment from the builder stage
+COPY --from=builder /opt/venv /opt/venv
+
+# Copy pcre library from build time
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libpcre.so.3 usr/lib/x86_64-linux-gnu
+
+# Set PATH to use the copied virtual environment
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Set the working directory in the container
+WORKDIR /app
 
 # Copy the content of the local src directory to the working directory
 COPY . .
@@ -25,4 +49,5 @@ COPY . .
 EXPOSE 5000
 
 # Run the application
-CMD ["uwsgi", "--socket", "0.0.0.0:5000", "--protocol=http", "--module", "memsipiju:app"]
+USER uwsgi
+CMD ["uwsgi", "--master", "--socket", "0.0.0.0:5000", "--protocol=http", "--module", "memsipiju:app", "--enable-threads"]
