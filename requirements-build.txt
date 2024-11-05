@@ -1,0 +1,4 @@
+# Flask web framework
+Flask==3.0.0
+#server
+uwsgi==2.0.24

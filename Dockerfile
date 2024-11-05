@@ -17,7 +17,7 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy the dependencies file to the working directory
-COPY requirements.txt .
+COPY requirements-build.txt .
 
 # Upgrade PIP
 RUN pip install --timeout=100 --upgrade pip
@@ -42,8 +42,8 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the content of the local src directory to the working directory
-COPY . .
+# Copy the script from src directory to the working directory
+COPY memsipiju.py .
 
 # Specify the port number the container should expose
 EXPOSE 5000
