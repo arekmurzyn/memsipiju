@@ -5,7 +5,8 @@ on:
     tags:
       - 'v*'
 env:
-  REPOSITORY: arbajt
+  NAMESPACE: arbajt
+  REGISTRY: docker.io
 
 jobs:
   push_to_registry:
@@ -25,7 +26,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REPOSITORY }}/${{ github.repository }}
+          images: ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ github.repository }}
           tags: |
             type=semver,pattern={{version}}
             type=raw,value=latest
