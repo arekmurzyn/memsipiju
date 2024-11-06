@@ -22,7 +22,7 @@ COPY requirements-build.txt .
 # Upgrade PIP
 RUN pip install --timeout=100 --upgrade pip
 # Install any dependencies
-RUN pip install --timeout=100 --no-cache-dir -r requirements.txt
+RUN pip install --timeout=100 --no-cache-dir -r requirements-build.txt
 
 #runtime stage
 FROM python:3.9-slim as runtime
